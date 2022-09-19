@@ -1,6 +1,9 @@
+#Requires -Version 7.0
 # Need to call Connect-AzAccount before running this script
 # Code inspired by the article at:
 # https://reginbald.medium.com/creating-app-registration-with-arm-bicep-b1d48a287abb
+
+[CmdletBinding(SupportsShouldProcess = $true)]
 param(
     [Parameter(Mandatory = $true, HelpMessage="path of the JSON file with the App definition template")]
     [string]$Path,
@@ -59,7 +62,6 @@ function Start-ApproveServer($port, $tenantId, $clientId, $scope, $redirectPath,
     if ($http.IsListening) {
         write-host "HTTP Server Ready!  " -f 'black' -b 'gre'
         write-host "now try going to $($http.Prefixes)" -f 'y'
-        write-host "then try going to $($http.Prefixes)other/path" -f 'y'
     }
 
     $exit = $false
@@ -80,7 +82,7 @@ function Start-ApproveServer($port, $tenantId, $clientId, $scope, $redirectPath,
             $search = $context.Request.QueryString;
             Write-Host "Raw URL $url"
             switch ($path) {
-                "/" { 
+                '/' { 
                     $redirectUrl = "http://localhost:$port$redirectPath"
                     $approveEndpoint = "https://login.microsoftonline.com/$tenantId/v2.0/adminconsent?client_id=$clientId&state=$state&redirect_uri=$redirectUrl&scope=$scope"
                     Send-HtmlContent $context "
@@ -91,17 +93,17 @@ function Start-ApproveServer($port, $tenantId, $clientId, $scope, $redirectPath,
     
                 }
                 $redirectPath {
-                    $err = $search["error"]
+                    $err = $search['error']
                     if (![string]::IsNullOrWhiteSpace($err)) {
-                        $errorDescription = $search["error_description"]
+                        $errorDescription = $search['error_description']
                         Send-HtmlContent $context "<h1>There was an error $err</h1>
                             <p>$errorDescription</p>
                         "
                     } else {
-                        $readState = $search["state"]
-                        #$adminConsent = $search["admin_consent"]
+                        $readState = $search['state']
+                        #$adminConsent = $search['admin_consent']
                         if ($readState -eq $state) {
-                            Send-HtmlContent $context "<h1>Success!</h1>"
+                            Send-HtmlContent $context '<h1>Success!</h1>'
                                 
                         } else {
                             Send-HtmlContent $context "<h1>Somebody tampered with state</h1>
@@ -109,14 +111,11 @@ function Start-ApproveServer($port, $tenantId, $clientId, $scope, $redirectPath,
 
                         }
                         $exit = $true
-                        #Send-HtmlContent $context "<h1>Hello</h1>"
                     }
                 }
-                "/exit" {
+                '/exit' {
                     $exit = $true
-                    [string]$html = "
-                    <h1>Bye</h1>
-                    "
+                    [string]$html = '<h1>Bye</h1>'
     
                     Send-HtmlContent $context $html
                     }
@@ -129,7 +128,7 @@ function Start-ApproveServer($port, $tenantId, $clientId, $scope, $redirectPath,
 
     
 $template = Get-Content -Path $Path | ConvertFrom-Json
-Write-Host "Read template"
+Write-Host 'Template read'
 Write-Host "AppName $AppName"
 
 if (![string]::IsNullOrEmpty($AppName)) {
@@ -143,20 +142,20 @@ $headers = @{'Content-Type' = 'application/json'; 'Authorization' = 'Bearer ' + 
 
 Write-Host ($template | ConvertTo-Json -Depth 10)
 try {
-    $app = (Invoke-RestMethod -Method POST -Headers $headers -Uri "https://graph.microsoft.com/beta/applications" -Body ($template | ConvertTo-Json -Depth 10) )
+    $app = (Invoke-RestMethod -Method POST -Headers $headers -Uri 'https://graph.microsoft.com/v1.0/applications' -Body ($template | ConvertTo-Json -Depth 10) )
 }
 catch{
     Write-Host "Error $Error"
     return $null
 }
 
-#$principal = Invoke-RestMethod -Method POST -Headers $headers -Uri  "https://graph.microsoft.com/beta/servicePrincipals" -Body (@{ "appId" = $app.appId } | ConvertTo-Json)
+#$principal = Invoke-RestMethod -Method POST -Headers $headers -Uri  'https://graph.microsoft.com/v1.0/servicePrincipals' -Body (@{ "appId" = $app.appId } | ConvertTo-Json)
 
 Write-Host "Tenant ID $tenantId"
 Write-Host "App Created with App-ID $($app.appId)"
 
-if ($CreateSecret) {
-    Write-Host "Creating Secret"
+if ($CreateSecret -eq $true) {
+    Write-Host 'Creating Secret'
     $body = @{
         "passwordCredential" = @{
             "displayName"= "Client Secret"
@@ -169,8 +168,8 @@ if ($CreateSecret) {
 
 } 
 
-if ($AdminConsentFlow) {
-    Write-Host "Waiting one minute so that the app is properly registered"
+if ($AdminConsentFlow -eq $true) {
+    Write-Host 'Waiting one minute so that the app is properly registered. Note: this might not be enough in some cases.'
     Start-Sleep -Seconds 60
     Start-ApproveServer $ApprovePort $tenantId $app.appId $ApproveScope $ApprovePath $ApproveState
 }
