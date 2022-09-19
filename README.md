@@ -29,3 +29,43 @@ In order to do that (without changing any parameters):
 - Note down the AppId and ClientSecret
 - Follow the instructions on screen to open a browser window and start the Admin Consent Flow for your newly registered app (it might take some time for the app to be registered, in that case the flow will fail saying that the app cannot be found. In that case you will have to manually give Admin approval to the AD app.
 - Follow the instructions at [Example 4: Connect to MicrosoftTeams using Access Tokens](https://learn.microsoft.com/en-us/powershell/module/teams/connect-microsoftteams?view=teams-ps#example-4-connect-to-microsoftteams-using-access-tokens) to Connect to Microsoft Teams.
+- **note** if the Admin Consent Flow would not pass, the PowerShell HTTP server will not exit by itself. In that case you need to access the "exit" endpoint from the browser, for example navigate to http://localhost:5000/exit
+
+Example Output:
+```
+.\Register-App.ps1 -Path '.\TeamsAdminApp.json' -CreateSecret  -AdminConsentFlow
+Template read
+{
+  "displayName": "Teams Module App",
+  "signInAudience": "AzureADMyOrg",
+  "requiredResourceAccess": [
+  ...
+ }
+ 
+Tenant ID <your tenant id>
+App Created with App-ID <newly created app ID>
+Creating Secret
+Client Secret <Client Secret>
+Waiting one minute so that the app is properly registered. Note: this might not be enough in some cases.
+HTTP Server Ready!  
+now try going to http://localhost:5000/
+
+# Microsoft code:
+ClientSecret = "<Client Secret>"
+$ClientSecret = [Net.WebUtility]::URLEncode($ClientSecret)
+$TenantID = "<your tenant id>"
+$Username = "<username>"
+$Password = "<pwd>"
+$Password = [Net.WebUtility]::URLEncode($Password)
+
+$URI = "https://login.microsoftonline.com/$TenantID/oauth2/v2.0/token"
+$Body = "client_id=$ClientID&client_secret=$ClientSecret&grant_type=password&username=$Username&password=$Password"
+$RequestParameters = @{
+   URI = $URI
+   Method = "POST"
+   ContentType = "application/x-www-form-urlencoded"
+}
+$GraphToken = (Invoke-RestMethod @RequestParameters -Body "$Body&scope=https://graph.microsoft.com/.default").access_token
+$TeamsToken = (Invoke-RestMethod @RequestParameters -Body "$Body&scope=48ac35b8-9aa8-4d74-927d-1f4a14a0b239/.default").access_token
+Connect-MicrosoftTeams -AccessTokens @($GraphToken, $TeamsToken)
+```
