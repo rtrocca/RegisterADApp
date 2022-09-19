@@ -5,29 +5,29 @@
 
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
-    [Parameter(Mandatory = $true, HelpMessage="path of the JSON file with the App definition template")]
+    [Parameter(Mandatory = $true, HelpMessage='Path of the JSON file with the App definition template')]
     [string]$Path,
     
-    [Parameter(Mandatory = $false, HelpMessage="Name of the app. It will be substituted in the JSON template")]
+    [Parameter(Mandatory = $false, HelpMessage='Name of the app. It will be substituted in the JSON template')]
     [string]$AppName = "",
 
-    [Parameter(Mandatory = $false, HelpMessage="Create a secret for the application")]
+    [Parameter(Mandatory = $false, HelpMessage='Create a secret for the application')]
     [switch]$CreateSecret = $false,
 
-    [Parameter(Mandatory = $false, HelpMessage="Trigger the admin consent flow to grant permissions to the app")]
+    [Parameter(Mandatory = $false, HelpMessage='Trigger the admin consent flow to grant permissions to the app')]
     [switch]$AdminConsentFlow = $false,
 
-    [Parameter(Mandatory = $false, HelpMessage="Redirect URL on localhost for the App Consent Flow")]
-    [string]$ApprovePath = "/myapp/permissions",
+    [Parameter(Mandatory = $false, HelpMessage='Redirect URL on localhost for the App Consent Flow')]
+    [string]$ApprovePath = '/myapp/permissions',
     
-    [Parameter(Mandatory = $false, HelpMessage="Port on localhost for the App Consent Flow")]
-    [string]$ApprovePort = "5000",
+    [Parameter(Mandatory = $false, HelpMessage='Port on localhost for the App Consent Flow')]
+    [string]$ApprovePort = '5000',
     
-    [Parameter(Mandatory = $false, HelpMessage="State for the App Consent Flow")]
-    [string]$ApproveState = "1234",
+    [Parameter(Mandatory = $false, HelpMessage='State for the App Consent Flow')]
+    [string]$ApproveState = '1234',
 
-    [Parameter(Mandatory = $false, HelpMessage="Scope for the App Consent Flow")]
-    [string]$ApproveScope = "https://graph.microsoft.com/.default"
+    [Parameter(Mandatory = $false, HelpMessage='Scope for the App Consent Flow')]
+    [string]$ApproveScope = 'https://graph.microsoft.com/.default'
     
     
 )
@@ -60,7 +60,7 @@ function Start-ApproveServer($port, $tenantId, $clientId, $scope, $redirectPath,
 
     # Log ready message to terminal 
     if ($http.IsListening) {
-        write-host "HTTP Server Ready!  " -f 'black' -b 'gre'
+        write-host 'HTTP Server Ready!  ' -f 'black' -b 'gre'
         write-host "now try going to $($http.Prefixes)" -f 'y'
     }
 
