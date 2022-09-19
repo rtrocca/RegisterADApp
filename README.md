@@ -19,8 +19,8 @@ ApprovePath and ApprovePort must match an entry in the SPA section of the app de
 This is an app definition that can be used for managing Microsoft Teams using Access Tokens. See the Connect-MicrosoftTeams documentation at [Example 4: Connect to MicrosoftTeams using Access Tokens](https://learn.microsoft.com/en-us/powershell/module/teams/connect-microsoftteams?view=teams-ps#example-4-connect-to-microsoftteams-using-access-tokens). 
 In order to do that (without changing any parameters):
 - Edit the TeamsAdminApp.json with your custom information, but do not change the scopes.
-- Run Connect-AzAccount [Connect-AzAccount](https://learn.microsoft.com/en-us/powershell/module/az.accounts/Connect-AzAccount?view=azps-8.3.0) part of Az PowerShell
-- Run RegisterApp =Path .\TeamsAdminApp.json -CreateSecret $true -AdminConsentFlow $true
+- Run ```Connect-AzAccount``` [Connect-AzAccount](https://learn.microsoft.com/en-us/powershell/module/az.accounts/Connect-AzAccount?view=azps-8.3.0) part of Az PowerShell
+- Run ```Register-App -Path .\TeamsAdminApp.json -CreateSecret -AdminConsentFlow```
 - Note down the AppId and ClientSecret
 - Follow the instructions on screen to open a browser window and start the Admin Consent Flow for your newly registered app (it might take some time for the app to be registered, in that case the flow will fail saying that the app cannot be found. In that case you will have to manually give Admin approval to the AD app.
 - Follow the instructions at [Example 4: Connect to MicrosoftTeams using Access Tokens](https://learn.microsoft.com/en-us/powershell/module/teams/connect-microsoftteams?view=teams-ps#example-4-connect-to-microsoftteams-using-access-tokens) to Connect to Microsoft Teams.
