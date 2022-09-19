@@ -3,33 +3,31 @@
 # Code inspired by the article at:
 # https://reginbald.medium.com/creating-app-registration-with-arm-bicep-b1d48a287abb
 
-[CmdletBinding(SupportsShouldProcess = $true)]
+[CmdletBinding(SupportsShouldProcess=$true, PositionalBinding=$false)]
 param(
-    [Parameter(Mandatory = $true, HelpMessage='Path of the JSON file with the App definition template')]
+    [Parameter(Mandatory=$true, HelpMessage='Path of the JSON file with the App definition template')]
     [string]$Path,
     
-    [Parameter(Mandatory = $false, HelpMessage='Name of the app. It will be substituted in the JSON template')]
-    [string]$AppName = "",
+    [Parameter(Mandatory=$false, HelpMessage='Name of the app. It will be substituted in the JSON template')]
+    [string]$AppName='',
 
-    [Parameter(Mandatory = $false, HelpMessage='Create a secret for the application')]
-    [switch]$CreateSecret = $false,
+    [Parameter(Mandatory=$false, HelpMessage='Create a secret for the application')]
+    [switch]$CreateSecret=$false,
 
-    [Parameter(Mandatory = $false, HelpMessage='Trigger the admin consent flow to grant permissions to the app')]
-    [switch]$AdminConsentFlow = $false,
+    [Parameter(Mandatory=$false, HelpMessage='Trigger the admin consent flow to grant permissions to the app')]
+    [switch]$AdminConsentFlow=$false,
 
-    [Parameter(Mandatory = $false, HelpMessage='Redirect URL on localhost for the App Consent Flow')]
-    [string]$ApprovePath = '/myapp/permissions',
+    [Parameter(Mandatory=$false, HelpMessage='Redirect URL on localhost for the App Consent Flow')]
+    [string]$ApprovePath='/myapp/permissions',
     
-    [Parameter(Mandatory = $false, HelpMessage='Port on localhost for the App Consent Flow')]
-    [string]$ApprovePort = '5000',
+    [Parameter(Mandatory=$false, HelpMessage='Port on localhost for the App Consent Flow')]
+    [string]$ApprovePort='5000',
     
-    [Parameter(Mandatory = $false, HelpMessage='State for the App Consent Flow')]
-    [string]$ApproveState = '1234',
+    [Parameter(Mandatory=$false, HelpMessage='State for the App Consent Flow')]
+    [string]$ApproveState='1234',
 
-    [Parameter(Mandatory = $false, HelpMessage='Scope for the App Consent Flow')]
+    [Parameter(Mandatory=$false, HelpMessage='Scope for the App Consent Flow')]
     [string]$ApproveScope = 'https://graph.microsoft.com/.default'
-    
-    
 )
 
 function Send-HtmlContent($context, $content) {
@@ -48,6 +46,7 @@ function Send-HtmlContent($context, $content) {
 }
 
 function Start-ApproveServer($port, $tenantId, $clientId, $scope, $redirectPath, $state) {
+    Write-Host  $port, $tenantId, $clientId, $scope, $redirectPath, $state
     # Http Server
     $http = [System.Net.HttpListener]::new() 
 
