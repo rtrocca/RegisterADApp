@@ -46,8 +46,7 @@ function Send-HtmlContent($context, $content) {
 }
 
 function Start-ApproveServer($port, $tenantId, $clientId, $scope, $redirectPath, $state) {
-    Write-Host  $port, $tenantId, $clientId, $scope, $redirectPath, $state
-    # Http Server
+    # HTTP Server
     $http = [System.Net.HttpListener]::new() 
 
     # Hostname and port to listen on
@@ -55,7 +54,6 @@ function Start-ApproveServer($port, $tenantId, $clientId, $scope, $redirectPath,
 
     # Start the Http Server 
     $http.Start()
-
 
     # Log ready message to terminal 
     if ($http.IsListening) {
