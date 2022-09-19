@@ -151,7 +151,7 @@ catch{
 #$principal = Invoke-RestMethod -Method POST -Headers $headers -Uri  'https://graph.microsoft.com/v1.0/servicePrincipals' -Body (@{ "appId" = $app.appId } | ConvertTo-Json)
 
 Write-Host "Tenant ID $tenantId"
-Write-Host "App Created with App-ID $($app.appId)"
+Write-Host "Client ID $($app.appId)"
 
 if ($CreateSecret -eq $true) {
     Write-Host 'Creating Secret'
@@ -162,7 +162,7 @@ if ($CreateSecret -eq $true) {
     }
     $secret = (Invoke-RestMethod -Method POST -Headers $headers -Uri  "https://graph.microsoft.com/beta/applications/$($app.id)/addPassword" -Body ($body | ConvertTo-Json))
 
-    Write-Host "Secret Key $($secret.keyId)"
+    #Write-Host "Secret Key $($secret.keyId)"
     Write-Host "Client Secret $($secret.secretText)"
 
 } 
